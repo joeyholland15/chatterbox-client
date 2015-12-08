@@ -24,6 +24,7 @@ app.escapeHTML = function (text) {
 
 app.init = function() {
   app.server = 'https://api.parse.com/1/classes/chatterbox';
+  console.log("helllooo");
   app.fetch(); 
 }; 
 
@@ -35,7 +36,7 @@ app.send = function(message) {
   data: JSON.stringify(message),
   contentType: 'application/json',
   success: function (data) {
-    console.log('chatterbox: Message sent');
+    console.log(data);
   },
   error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -68,9 +69,26 @@ app.fetch = function() {
 
       // });
 
-      $.each(arrayOfMessageObjects, function(index, val) {
+      // $.each(arrayOfMessageObjects, function(index, val) {
+      //   val['text'] = app.escapeHTML(val['text']); 
+      //   var $chats = $('#chats');
+        
+      //   $('<div class=chat></div>').appendTo($chats);
+      //   var $chat = $('#chats:last-child');
+      //   console.log($chat);
+      //   $('<ul class=list></ul>').appendTo($chat);
+      //   $('<li>'+val.username+'</li>').appendTo('.list:last-child'); 
+      //   $('<li>'+val.text+'</li>').appendTo('.list:last-child'); 
+      //   $('<li>'+val.createdAt+'</li>').appendTo('.list:last-child'); 
+        $.each(arrayOfMessageObjects, function(index, val) {
         val['text'] = app.escapeHTML(val['text']); 
-        $('ul').append('<span class=time>'+val.updatedAt+'</span>')
+        var $chats = $('#chats');
+        
+        $('<ul class=chat></ul>').prependTo($chats);
+        var message = $('ul').first();
+        $('<li>'+val.username+'</li>').appendTo(message); 
+        $('<li>'+val.text+'</li>').appendTo(message); 
+        $('<li>'+val.createdAt+'</li>').appendTo(message); 
       }); 
       // console.log(arrayOfMessageObjects); 
       
@@ -84,7 +102,24 @@ app.fetch = function() {
 }; 
 
 //app.clearMessages = function() {};
-app.addMessage = function() {};
+app.addMessage = function() {
+  $('#messageForm').submit(function() {
+      // get all the inputs into an array.
+      var $inputs = $('#messageForm :input');
+
+      // not sure if you wanted this, but I thought I'd add it.
+      // get an associative array of just the values.
+      var values = {};
+      $inputs.each(function() {
+          values[this.name] = $(this).val();
+      });
+
+      console.log(values);
+
+  });
+};
+
+app.addMessage();
 app.addRoom = function() {}; 
 
 //<------------------------------------------------------------------------------------------->
@@ -96,9 +131,9 @@ app.clearMessages = function(){
 
 
 app.init();
-app.send(message);
+app.send("helloooo");
 app.fetch = app.fetch.bind(app);
-setInterval(app.fetch, 2000);
+// setInterval(app.fetch, 10000);
 
 
 
