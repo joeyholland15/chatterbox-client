@@ -36,7 +36,7 @@ app.send = function(message) {
   data: JSON.stringify(message),
   contentType: 'application/json',
   success: function (data) {
-    console.log(data);
+    app.fetch();
   },
   error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -54,10 +54,11 @@ app.fetch = function() {
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
-      var last = $('span').last().text();
+      // $('ul').remove();
       var chatRooms = {}; 
       var arrayOfMessageObjects = data.results;
-      console.log(last);
+      $("#chats").empty();
+   
       // _.each(arrayOfMessageObjects, function(messageObject){
       //   messageObject['text'] = app.escapeHTML(messageObject['text']); 
       //   if(chatRooms[messageObject['roomname']] === undefined){
@@ -83,9 +84,10 @@ app.fetch = function() {
         $.each(arrayOfMessageObjects, function(index, val) {
         val['text'] = app.escapeHTML(val['text']); 
         var $chats = $('#chats');
+
         
-        $('<ul class=chat></ul>').prependTo($chats);
-        var message = $('ul').first();
+        $('<ul class=chat></ul>').appendTo($chats).last();
+        var message = $('ul').last();
         $('<li>'+val.username+'</li>').appendTo(message); 
         $('<li>'+val.text+'</li>').appendTo(message); 
         $('<li>'+val.createdAt+'</li>').appendTo(message); 
@@ -102,38 +104,62 @@ app.fetch = function() {
 }; 
 
 //app.clearMessages = function() {};
-app.addMessage = function() {
-  $('#messageForm').submit(function() {
-      // get all the inputs into an array.
-      var $inputs = $('#messageForm :input');
+// app.addMessage = function() {
+//   $('#messageForm').submit(function() {
+//       // get all the inputs into an array.
+//       var $inputs = $('#messageForm :input');
 
-      // not sure if you wanted this, but I thought I'd add it.
-      // get an associative array of just the values.
-      var values = {};
-      $inputs.each(function() {
-          values[this.name] = $(this).val();
-      });
+//       // not sure if you wanted this, but I thought I'd add it.
+//       // get an associative array of just the values.
+//       var values = {};
+//       $inputs.each(function() {
+//           values[this.name] = $(this).val();
+//       });
 
-      console.log(values);
+//       console.log(values);
 
-  });
-};
+//   });
+// };
 
-app.addMessage();
+
 app.addRoom = function() {}; 
 
 //<------------------------------------------------------------------------------------------->
 app.clearMessages = function(){
-  $('#chats').empty();
-  // app.fetch();
 
-}
+};
+// $( "#messageForm" ).submit(function( event ) {
+//   outputTranslated();
+//   alert( "Handler for .submit() called." );
+//   event.preventDefault();
+// });
 
+var textArea = $('#myUser').val();
+ 
+$( document ).ready(function() {
+  $("#messageForm").submit(function(e){
+
+    var messageObject = {
+      username: $('#myUser').val(),
+      text: $('#myMessage').val(),
+      roomname: 'Dima and Joey'
+    }; 
+     console.log(messageObject);
+    app.send(messageObject);
+    // app.fetch();
+    return false;
+});
+
+  
+});
+// function outputTranslated(){
+//     var textArea = $('#myUser').val();
+//     console.log(textArea);  
+// }
 
 app.init();
-app.send("helloooo");
 app.fetch = app.fetch.bind(app);
-// setInterval(app.fetch, 10000);
+setInterval(app.fetch, 1000);
 
 
 
