@@ -53,9 +53,10 @@ app.fetch = function() {
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
+      var last = $('span').last().text();
       var chatRooms = {}; 
       var arrayOfMessageObjects = data.results;
- 
+      console.log(last);
       // _.each(arrayOfMessageObjects, function(messageObject){
       //   messageObject['text'] = app.escapeHTML(messageObject['text']); 
       //   if(chatRooms[messageObject['roomname']] === undefined){
@@ -69,7 +70,7 @@ app.fetch = function() {
 
       $.each(arrayOfMessageObjects, function(index, val) {
         val['text'] = app.escapeHTML(val['text']); 
-        $('#chats').append("<li class = 'chat'>"+val.text+"</li>")
+        $('ul').append('<span class=time>'+val.updatedAt+'</span>')
       }); 
       // console.log(arrayOfMessageObjects); 
       
@@ -97,7 +98,8 @@ app.clearMessages = function(){
 app.init();
 app.send(message);
 app.fetch = app.fetch.bind(app);
-//setInterval(clear, 2000);
+setInterval(app.fetch, 2000);
 
 
 
+ // $('ul').append("<li class = 'chat'>"+val.text+ " </li>").append('<span class=time>'+val.updatedAt+'</span>')
