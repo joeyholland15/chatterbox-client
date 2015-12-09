@@ -56,7 +56,8 @@ app.fetch = function() {
       chatRooms['all'] = data.results;
       
 
-      $("#chats").empty();
+      // $("#chats").empty();
+      app.clearMessages();
       _.each(data.results, function(messageObject){
         messageObject['text'] = app.escapeHTML(messageObject['text']); 
         if(chatRooms[messageObject['roomname']] === undefined){
@@ -126,7 +127,7 @@ app.addRoom = function() {};
 
 //<------------------------------------------------------------------------------------------->
 app.clearMessages = function(){
-
+  $('#chats').empty();
 };
 // $( "#messageForm" ).submit(function( event ) {
 //   outputTranslated();
