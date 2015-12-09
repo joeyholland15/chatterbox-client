@@ -1,13 +1,6 @@
 // YOUR CODE HERE:
-var message = {
-  username: 'shawndrost',
-  text: '<>&&',
-  roomname: 'Dima and Joey'
-};
-
+var chatRooms = {}; 
 var app = {}; 
-
-var messages = 0;
 
 app.escapeHTML = function (text) {
   if (text === undefined){return};
@@ -24,9 +17,13 @@ app.escapeHTML = function (text) {
 
 app.init = function() {
   app.server = 'https://api.parse.com/1/classes/chatterbox';
-  console.log("helllooo");
-  app.fetch(); 
+  
+  app.fetch();
 }; 
+
+
+
+
 
 app.send = function(message) {
   $.ajax({
@@ -51,48 +48,51 @@ app.fetch = function() {
     // This is the url you should use to communicate with the parse API server.
     url: app.server,
     type: 'GET',
-    data: JSON.stringify(message),
+    // data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
       // $('ul').remove();
-      var chatRooms = {}; 
-      var arrayOfMessageObjects = data.results;
+     
+      chatRooms['all'] = data.results;
+      
+
       $("#chats").empty();
-   
-      // _.each(arrayOfMessageObjects, function(messageObject){
-      //   messageObject['text'] = app.escapeHTML(messageObject['text']); 
-      //   if(chatRooms[messageObject['roomname']] === undefined){
-      //     chatRooms[messageObject['roomname']] = [];
-      //     chatRooms[messageObject['roomname']].push(messageObject);
-      //   } else {
-      //     chatRooms[messageObject['roomname']].push(messageObject);
-      //   }
+      _.each(data.results, function(messageObject){
+        messageObject['text'] = app.escapeHTML(messageObject['text']); 
+        if(chatRooms[messageObject['roomname']] === undefined){
+          chatRooms[messageObject['roomname']] = [];
+          chatRooms[messageObject['roomname']].push(messageObject);
+        } else {
+          chatRooms[messageObject['roomname']].push(messageObject);
+        }
 
-      // });
+      });
 
-      // $.each(arrayOfMessageObjects, function(index, val) {
-      //   val['text'] = app.escapeHTML(val['text']); 
-      //   var $chats = $('#chats');
+      var chatRoom = $("#chatRooms option:selected").text();
+      $('#chatRooms').empty(); 
+
+      for (var prop in chatRooms){
+          if (prop === chatRoom){
+            $('#chatRooms').append("<option value=" + prop + " selected >" + prop + "</option>")
+          }
+            $('#chatRooms').append("<option value=" + prop + ">" + prop + "</option>")
+          }
+       
+
         
-      //   $('<div class=chat></div>').appendTo($chats);
-      //   var $chat = $('#chats:last-child');
-      //   console.log($chat);
-      //   $('<ul class=list></ul>').appendTo($chat);
-      //   $('<li>'+val.username+'</li>').appendTo('.list:last-child'); 
-      //   $('<li>'+val.text+'</li>').appendTo('.list:last-child'); 
-      //   $('<li>'+val.createdAt+'</li>').appendTo('.list:last-child'); 
-        $.each(arrayOfMessageObjects, function(index, val) {
+
+
+
+        $.each(chatRooms[chatRoom], function(index, val) {
         val['text'] = app.escapeHTML(val['text']); 
         var $chats = $('#chats');
-
-        
         $('<ul class=chat></ul>').appendTo($chats).last();
         var message = $('ul').last();
         $('<li>'+val.username+'</li>').appendTo(message); 
         $('<li>'+val.text+'</li>').appendTo(message); 
         $('<li>'+val.createdAt+'</li>').appendTo(message); 
       }); 
-      // console.log(arrayOfMessageObjects); 
+      console.log(chatRoom); 
       
     },
     error: function (data) {
@@ -135,7 +135,13 @@ app.clearMessages = function(){
 // });
 
 var textArea = $('#myUser').val();
- 
+$(document).ready(function() {
+
+  $('#chatRooms').on('change', function() {
+     app.fetch();
+  })
+});
+
 $( document ).ready(function() {
   $("#messageForm").submit(function(e){
 
@@ -148,9 +154,7 @@ $( document ).ready(function() {
     app.send(messageObject);
     // app.fetch();
     return false;
-});
-
-  
+ }) 
 });
 // function outputTranslated(){
 //     var textArea = $('#myUser').val();
@@ -159,7 +163,12 @@ $( document ).ready(function() {
 
 app.init();
 app.fetch = app.fetch.bind(app);
-setInterval(app.fetch, 1000);
+ 
+ // $( document ).ready(function() {
+  console.log(chatRooms);
+    
+  // });
+setInterval(app.fetch, 10000);
 
 
 
